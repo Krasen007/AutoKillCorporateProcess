@@ -14,18 +14,44 @@ internal class Program
 
     private static void Main(string[] args)
     {
+
         var handle = GetConsoleWindow();
         ShowWindow(handle, SW_SHOW);
 
         // Enter the name of the processes running on the local computer.
-        Start:
-        Console.Write("Enter the name of the process: ");
-        string? annoyingProcess = Console.ReadLine();
-        if ((annoyingProcess == "") || (annoyingProcess == null))
+        string? annoyingProcess;
+        if (args.Length > 0)
         {
-            Console.Clear();
-            goto Start;
+            annoyingProcess = args[0];
         }
+        else
+        {
+            Start:
+            Console.Write("Enter the name of the process: ");
+            annoyingProcess = Console.ReadLine();
+            if ((annoyingProcess == "") || (annoyingProcess == null))
+            {
+                Console.Clear();
+                goto Start;
+            }
+        }
+        int userWaitTime = 0;
+        if (args.Length > 1)
+        {
+            if (int.TryParse(args[1], out int time))
+            {
+                userWaitTime = time;
+            }
+            else
+            {
+                Console.WriteLine("Invalid time argument provided. Using default.");
+                userWaitTime = 600000;
+            }
+        } else
+        {
+            userWaitTime = 600000;
+        }
+
         // Hides the console window, because we don't need it anymore.
         ShowWindow(handle, SW_HIDE);
 
@@ -39,14 +65,13 @@ internal class Program
             if (noProc)
             {
                 // Check every 10 minutes if the process is running.
-                Thread.Sleep(6000); //600000
+                Thread.Sleep(userWaitTime);
                 goto GetProcess;
             }
             else
             {
                 Console.WriteLine("No such process is running, waiting...");
-                noProc = true;
-                Thread.Sleep(5000);
+                noProc = true;               
                 goto GetProcess;
             }
         }

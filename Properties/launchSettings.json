@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AutoKillCorporateProcess": {
+      "commandName": "Project",
+      "commandLineArgs": "\"notepad\" 2000"
+    }
+  }
+}
