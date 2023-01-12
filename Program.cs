@@ -1,19 +1,36 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 internal class Program
 {
+    [DllImport("kernel32.dll")]
+    private static extern IntPtr GetConsoleWindow();
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    private const int SW_HIDE = 0;
+    private const int SW_SHOW = 5;
+
     private static void Main(string[] args)
     {
+        var handle = GetConsoleWindow();
+        ShowWindow(handle, SW_SHOW);
+
         // Enter the name of the processes running on the local computer.
         Start:
-        Console.WriteLine("Enter the name of the process: ");
+        Console.Write("Enter the name of the process: ");
         string? annoyingProcess = Console.ReadLine();
         if ((annoyingProcess == "") || (annoyingProcess == null))
         {
             Console.Clear();
             goto Start;
         }
+        // Hides the console window, because we don't need it anymore.
+        ShowWindow(handle, SW_HIDE);
+
         bool noProc = false;
+
         GetProcess:
         Process[] runningProcesses = Process.GetProcessesByName(annoyingProcess);
 
@@ -22,7 +39,7 @@ internal class Program
             if (noProc)
             {
                 // Check every 10 minutes if the process is running.
-                Thread.Sleep(600000);
+                Thread.Sleep(6000); //600000
                 goto GetProcess;
             }
             else
